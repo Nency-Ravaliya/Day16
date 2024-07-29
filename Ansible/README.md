@@ -29,11 +29,14 @@ This guide provides instructions for using an Ansible playbook to deploy Docker 
    server2 ansible_host=203.0.113.112
    server3 ansible_host=203.0.113.113
 
-  [all:vars]
-  ansible_python_interpreter=/usr/bin/python3
-  
+   [all:vars]
+   ansible_python_interpreter=/usr/bin/python3
+  ```
+
   ansible-inventory --list -y
-  Output
+```
+  **Output**
+```
 all:
   children:
     servers:
@@ -50,3 +53,5 @@ all:
     ungrouped: {}
   ```
 
+**Output**
+- ![image](https://github.com/user-attachments/assets/0330fb83-fcef-4649-9efa-e22e28f068b3)
