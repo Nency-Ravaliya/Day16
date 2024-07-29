@@ -1,0 +1,59 @@
+---
+- name: Deploy Docker Container on Local Server
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Check if Docker is installed
+      command: docker --version
+      register: docker_version
+      ignore_errors: yes
+
+    - name: Install prerequisites
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+      when: docker_version.failed
+
+    - name: Add Docker GPG key
+      command: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+      when: docker_version.failed
+
+    - name: Add Docker repository
+      command: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release | lower }} stable"
+      when: docker_version.failed
+
+    - name: Update APT package index
+      apt:
+        update_cache: yes
+      when: docker_version.failed
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+      when: docker_version.failed
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull Docker image
+      docker_image:
+        name: nensiravaliya28/my-nginx-app
+        tag: latest
+        source: pull
+
+    - name: Run Docker container
+      docker_container:
+        name: my-nginx-app-container
+        image: nensiravaliya28/my-nginx-app:latest
+        state: started
+        ports:
+          - "80:80"
+        restart_policy: always
