@@ -27,7 +27,7 @@ This guide explains how to set up a Jenkins CI/CD pipeline to automate the proce
 
 1. Open Jenkins and create a new pipeline job.
 2. Under the **Pipeline** section, choose **Pipeline script from SCM**.
-3. Set **SCM** to **Git** and provide the URL of your GitHub repository.
+3. Set **SCM** to **Git** and provide the URL of your GitHub repository or you can also add the script manually from this repo.
 4. Under **Credentials**, select the GitHub credentials you set up earlier.
 5. Set **Branch Specifier** to the branch you want to build (e.g., `main`).
 
@@ -92,3 +92,12 @@ pipeline {
         }
     }
 }
+```
+
+Output:
+- ![image](https://github.com/user-attachments/assets/ca85b2e1-fad3-4d4b-880b-974fb6a3ba7e)
+- ![image](https://github.com/user-attachments/assets/aacab8f4-4e12-4992-958e-41a8ee3c938d)
+- ![image](https://github.com/user-attachments/assets/24922461-8df6-43bb-9f0d-c04977753c86)
+
+
+
