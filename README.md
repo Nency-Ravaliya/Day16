@@ -38,61 +38,57 @@ Create a `Jenkinsfile` in the root of your GitHub repository with the following 
 ```groovy
 pipeline {
     agent any
-
     environment {
-        DOCKER_REPO = 'your-dockerhub-username/your-repository'
-        GITHUB_CREDENTIALS_ID = 'your-github-credentials-id'
-        DOCKER_CREDENTIALS_ID = 'your-dockerhub-credentials-id'
+        // DockerHub credentials
+        DOCKER_CREDENTIALS_ID = 'nensiravaliya28'
+        // DockerHub repository
+        DOCKER_REPO = 'nensiravaliya28/my-nginx-app'
+        // GitHub credentials
+        GIT_CREDENTIALS_ID = 'gtk0'
     }
-
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                script {
-                    // Checkout the code from GitHub
-                    checkout scm
-                }
+                git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'https://github.com/Nency-Ravaliya/Day16.git', branch: 'main'
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
-                    sh 'docker build -t ${DOCKER_REPO}:${env.BUILD_ID} .'
+                    // Build the Docker image and tag it with BUILD_ID
+                    def image = docker.build("${DOCKER_REPO}:${env.BUILD_ID}")
                 }
             }
         }
-
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Log in to Docker Hub
-                    withDockerRegistry([credentialsId: "${DOCKER_CREDENTIALS_ID}", url: '']) {
-                        // Push the Docker image to Docker Hub
-                        sh 'docker push ${DOCKER_REPO}:${env.BUILD_ID}'
+                    // Push the image with both the BUILD_ID tag and the 'latest' tag
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
+                        def image = docker.image("${DOCKER_REPO}:${env.BUILD_ID}")
+                        image.push("${env.BUILD_ID}") // Push with BUILD_ID tag
+                        image.push('latest') // Optionally, also push with 'latest' tag
                     }
                 }
             }
         }
-
         stage('Deploy Container') {
             steps {
                 script {
-                    // Stop and remove any existing container
                     sh """
+                    #!/bin/bash
+                    docker pull ${DOCKER_REPO}:${env.BUILD_ID}
                     docker stop my-nginx-app-container || true
                     docker rm my-nginx-app-container || true
-                    """
-
-                    // Pull the image from Docker Hub and run it
-                    sh """
-                    docker pull ${DOCKER_REPO}:${env.BUILD_ID}
                     docker run -d --name my-nginx-app-container -p 80:80 ${DOCKER_REPO}:${env.BUILD_ID}
                     """
                 }
             }
         }
     }
+    post {
+        always {
+            cleanWs()
+        }
+    }
 }
-
