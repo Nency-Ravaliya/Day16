@@ -1,0 +1,32 @@
+# Ignore version control directories
+.git
+.gitignore
+
+# Ignore OS and IDE-specific files
+*.log
+*.tmp
+*.swp
+*.swo
+*.DS_Store
+*.vscode/
+.idea/
+
+# Ignore node_modules directory for Node.js projects
+node_modules/
+
+# Ignore build and dependency directories
+build/
+dist/
+*.jar
+*.war
+*.class
+
+# Ignore temporary files
+*.bak
+*.old
+*.patch
+
+# Ignore sensitive files
+.env
+*.pem
+*.key
